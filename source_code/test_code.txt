@@ -1,0 +1,21 @@
+int test(int a,int b){
+
+ }
+
+ void main(int sum){
+     sum = 2*(1+99);
+     int tmp=0;
+     if(sum>=100)
+     {
+       int x = 2;
+       tmp = 100*2;
+     }else{
+       while(sum<100)
+       {
+            sum = sum+1;
+            int x =2;
+            sum= sum+x;
+       }
+     }
+     test(tmp+1+2,sum-10+20);
+ }

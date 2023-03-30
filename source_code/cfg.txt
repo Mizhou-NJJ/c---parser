@@ -1,0 +1,47 @@
+
+//不含左递归的LL(1) 文法
+program -> func funcs
+funcs -> func funcs | ε
+func -> type IDN ( args ) func_body
+type -> int | short | long |char |float |double| void
+args -> type IDN arg | ε
+arg -> , type IDN arg | ε
+func_body -> ; | block
+block -> { define_stmts stmts }
+define_stmts -> define_stmt define_stmts | ε
+define_stmt -> type IDN init vars ;
+init -> = expression | ε
+vars -> , IDN init vars | ε
+stmts -> stmt stmts | ε
+stmt -> assign_stmt | jump_stmt | iteration_stmt | branch_stmt
+assign_stmt -> expression ;
+jump_stmt -> continue ; | break ; | return innull_expr ;
+iteration_stmt -> while ( logical_expression ) block_stmt | for ( isnull_expr ; isnull_expr ; isnull_expr ) block_stmt | do block_stmt while ( logical_expression ) ;
+branch_stmt -> if ( logical_expression ) block_stmt result | switch ( IDN ) { case_stmt case_stmts default_stmt }
+result -> else block_stmt | ε
+
+logical_expression -> ! expression bool_expression | expression bool_expression
+bool_expression -> lop expression bool_expression | ε
+//下面的or 是 ||
+lop -> && | or
+case_stmts -> case_stmt case_stmts | ε
+case_stmt -> case const : stmts
+default_stmt -> default : stmts
+block_stmt -> { stmts }
+isnull_expr -> expression | ε
+expression -> value operation
+operation -> compare_op value | equal_op value | ε
+compare_op -> > | >= | < | <= | == !=
+equal_op -> = | += | -= | *= | /= | %=
+value -> item value'
+value' -> + item value' | - item value' | ε
+
+item -> factor item'
+item' -> * factor item' | / factor item' | % factor item' | ε
+factor -> ( value ) | IDN call_func | const
+call_func -> ( es ) | ε
+es -> isnull_expr isnull_es
+isnull_es -> , isnull_expr isnull_es | ε
+
+const -> num_const | FLOAT | CHAR | STR
+num_const -> INT10 | INT8 | INT16

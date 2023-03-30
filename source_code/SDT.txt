@@ -1,0 +1,45 @@
+
+//不含左递归的LL(1) 文法
+program -> func funcs
+funcs -> func funcs | ε
+func ->  type IDN ( args ) @MAKE_FUNC_TABLE func_body
+type -> int | short | long |char |float |double| void
+args -> type IDN @ARG_INFO @ARGS arg | ε
+arg -> , type IDN @ARG_INFO arg | ε
+func_body -> ; | block
+block -> { @FUNC_INIT @GEN_FUNC_PROCESS_LABEL define_stmts stmts }
+define_stmts -> define_stmt define_stmts | ε
+define_stmt -> type IDN @CHECK_VAR_DEFINE @VAR_INIT init vars ;
+init -> = expression @CHECK_EXPR_TYPE @GEN_DEFINE_EXPR_CODE | ε
+vars -> , IDN @CHECK_VAR_DEFINE init vars | ε
+stmts -> stmt stmts | ε
+stmt -> assign_stmt @GEN_EXPR_ASSIGN_CODE | jump_stmt | iteration_stmt | branch_stmt
+assign_stmt -> expression @VAR_INIT @CHECK_EXPR_TYPE ;
+jump_stmt -> continue ; | break ; | return innull_expr ;
+iteration_stmt -> while ( @LABEl_OUT_IN logical_expression ) @GEN_IF_CODE @GEN_TRUE_LABEL block_stmt @GEN_ENTER_CODE | for ( isnull_expr ; isnull_expr ; isnull_expr ) block_stmt | do block_stmt while ( logical_expression ) ;
+branch_stmt -> if (@LABEL_OUT_IN logical_expression ) @GEN_IF_CODE @GEN_TRUE_LABEL  block_stmt @GEN_FALSE_LABEL result | switch ( IDN ) { case_stmt case_stmts default_stmt }
+result -> else block_stmt | ε
+
+logical_expression -> ! expression @REVERS_EQ_OPER @GEN_MID_EXPR @CHECK_BOOL_EXPR bool_expression | expression @GEN_MID_EXPR @CHECK_BOOL_EXPR bool_expression
+bool_expression -> lop @GEN_LABEL_OR_CODE expression @GEN_MID_EXPR bool_expression | ε
+//下面的or 是 ||
+lop -> && | or
+case_stmts -> case_stmt case_stmts | ε
+case_stmt -> case const : stmts
+default_stmt -> default : stmts
+block_stmt -> { @MAKE_CHILD_TABLE stmts }
+expression -> value operation
+operation -> compare_op value | equal_op value | ε
+compare_op -> > | >= | < | <= | == | != @EN_EXPRESSION_STACK
+equal_op -> = @CAL_LEFTID_INFO | += | -= | *= | /= | %=
+value -> item value'
+value' -> + item @GEN_EXPR_CODE value' | - item @GEN_EXPR_CODE value' | ε
+item -> factor item'
+item' -> * factor @GEN_EXPR_CODE item' | / factor @GEN_EXPR_CODE item' | % factor @GEN_EXPR_CODE item' | ε
+factor -> ( value ) | IDN @CHECK_UNDEFINE call_func | const
+call_func -> ( es ) @GEN_CALL_FUNC | ε
+es -> isnull_expr isnull_es
+isnull_expr -> expression | ε
+isnull_es -> , isnull_expr isnull_es | ε
+const -> num_const | FLOAT | CHAR | STR
+num_const -> INT10 @NUM_CONST
